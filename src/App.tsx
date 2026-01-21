@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 import type { Question, QuizMode } from './types'
 import { QUIZ_CONFIG } from './types'
