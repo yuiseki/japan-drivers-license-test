@@ -105,7 +105,9 @@ function App() {
                   <p>合格ライン: {QUIZ_CONFIG.full.passRate}%以上</p>
                   <p className="mode-description">第一段階 + 第二段階の問題</p>
                 </div>
-                <div className="coming-soon">Coming soon...</div>
+                <button className="btn btn-start" disabled>
+                  Coming soon...
+                </button>
               </div>
             </div>
           </div>
