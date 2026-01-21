@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# 🚗 運転免許試験クイズ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+日本の運転免許試験の第一段階の問題を練習できるWebアプリケーションです。50問のランダムな問題に挑戦して、運転免許試験に備えましょう！
 
-Currently, two official plugins are available:
+## ✨ 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **ランダム出題**: 全14セクションから50問をランダムに出題
+- **○×形式**: 実際の試験に近い○×形式の問題
+- **即座の採点**: 各問題に対する即座のフィードバック
+- **合格判定**: 90%以上で合格判定（45問以上正解）
+- **詳細な結果表示**: 全問題の正誤と正解を確認可能
+- **レスポンシブデザイン**: スマートフォンでも快適に利用可能
 
-## React Compiler
+## 🚀 開発環境のセットアップ
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### 必要なもの
 
-## Expanding the ESLint configuration
+- Node.js (v18以上推奨)
+- npm または yarn
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### インストール
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# 依存関係のインストール
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# 開発サーバーの起動
+npm run dev
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# ビルド
+npm run build
+
+# プレビュー
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📁 プロジェクト構成
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+japan-drivers-license-test/
+├── public/
+│   └── questions/
+│       └── 1st-step-sections/    # 問題データ（CSV形式）
+│           ├── 1/
+│           │   ├── questions.csv
+│           │   └── answers.csv
+│           ├── 2/
+│           └── ...
+├── src/
+│   ├── App.tsx                   # メインアプリケーション
+│   ├── types.ts                  # 型定義
+│   └── utils/
+│       └── csvParser.ts          # CSVパーサー
+├── vite.config.ts
+└── package.json
+```
+
+## 🛠️ 技術スタック
+
+- **React** - UIライブラリ
+- **TypeScript** - 型安全性
+- **Vite** - ビルドツール
+- **SWC** - 高速なJavaScriptコンパイラ
+- **ESLint** - コード品質管理
+
+## 📝 問題データ
+
+問題データは`public/questions/1st-step-sections/`ディレクトリ内にCSV形式で格納されています。各セクション（1〜14）には以下のファイルが含まれます：
+
+- `questions.csv`: 問題文とID
+- `answers.csv`: 問題IDと正解（true/false）
+
+## 🎯 使い方
+
+1. アプリケーションを開くと、自動的に50問がランダムに選択されます
+2. 各問題に対して「⭕ マル」または「❌ バツ」を選択
+3. 回答すると即座に正誤が表示されます
+4. 「次へ」ボタンで次の問題に進みます
+5. 全50問終了後、結果画面で採点結果を確認できます
+6. 90%以上（45問以上正解）で合格です
+
+## 📄 ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## 🤝 コントリビューション
+
+プルリクエストを歓迎します！バグ報告や機能リクエストはIssueでお知らせください。
