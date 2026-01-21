@@ -174,7 +174,6 @@ function App() {
       <main className="quiz-container">
         <div className="question-card">
           <div className="question-header">
-            <span className="section-badge">セクション {currentQuestion.section}</span>
             <div className="progress-bar">
               <div 
                 className="progress-fill" 
