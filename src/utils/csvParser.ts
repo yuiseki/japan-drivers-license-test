@@ -1,4 +1,4 @@
-import type { Question } from '../types';
+import type { Question, QuizMode } from '../types';
 
 export function parseCSV(csvText: string): Record<string, string>[] {
   const lines = csvText.trim().split('\n');
@@ -21,11 +21,12 @@ export function parseCSV(csvText: string): Record<string, string>[] {
   return data;
 }
 
-export async function loadAllQuestions(): Promise<Question[]> {
+export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<Question[]> {
   const sections = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
   const allQuestions: Question[] = [];
   const baseUrl = import.meta.env.BASE_URL;
   
+  // 1st-step-sections (仮免許)
   for (const section of sections) {
     try {
       const [questionsResponse, answersResponse] = await Promise.all([
@@ -65,6 +66,51 @@ export async function loadAllQuestions(): Promise<Question[]> {
       });
     } catch (error) {
       console.error(`セクション ${section} の処理中にエラー:`, error);
+    }
+  }
+  
+  // 2nd-step-sections (本免許) - 本免許モードの場合のみ
+  if (mode === 'full') {
+    for (const section of sections) {
+      try {
+        const [questionsResponse, answersResponse] = await Promise.all([
+          fetch(`${baseUrl}questions/2nd-step-sections/${section}/questions.csv`),
+          fetch(`${baseUrl}questions/2nd-step-sections/${section}/answers.csv`)
+        ]);
+        
+        if (!questionsResponse.ok || !answersResponse.ok) {
+          console.warn(`2nd-step セクション ${section} の読み込みに失敗しました`);
+          continue;
+        }
+        
+        const questionsText = await questionsResponse.text();
+        const answersText = await answersResponse.text();
+        
+        const questions = parseCSV(questionsText);
+        const answers = parseCSV(answersText);
+        
+        // answersをMapに変換
+        const answersMap = new Map(
+          answers.map(a => [a.id, a.answer === 'true'])
+        );
+        
+        // 「この」を含む問題を除外
+        const validQuestions = questions.filter(q => !q.question.includes('この'));
+        
+        validQuestions.forEach(q => {
+          const answer = answersMap.get(q.id);
+          if (answer !== undefined) {
+            allQuestions.push({
+              id: `2nd-${section}-${q.id}`,
+              question: q.question,
+              answer: answer,
+              section: section + 100 // 2nd-stepは100番台にする
+            });
+          }
+        });
+      } catch (error) {
+        console.error(`2nd-step セクション ${section} の処理中にエラー:`, error);
+      }
     }
   }
   

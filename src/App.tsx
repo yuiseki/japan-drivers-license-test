@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import type { Question } from './types'
+import type { Question, QuizMode } from './types'
+import { QUIZ_CONFIG } from './types'
 import { loadAllQuestions } from './utils/csvParser'
 
-const TOTAL_QUESTIONS = 50
-
 function App() {
+  const [mode, setMode] = useState<QuizMode>('provisional')
+  const [showModeSelect, setShowModeSelect] = useState(true)
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [answered, setAnswered] = useState(false)
   const [userAnswers, setUserAnswers] = useState<boolean[]>([])
   const [showResults, setShowResults] = useState(false)
 
-  const initializeQuiz = async () => {
+  const initializeQuiz = async (quizMode: QuizMode) => {
     setLoading(true)
-    const allQuestions = await loadAllQuestions()
+    setShowModeSelect(false)
+    const allQuestions = await loadAllQuestions(quizMode)
     
-    // ランダムに50問を選択
+    const config = QUIZ_CONFIG[quizMode]
+    // ランダムに指定問数を選択
     const shuffled = [...allQuestions].sort(() => Math.random() - 0.5)
-    const selected = shuffled.slice(0, Math.min(TOTAL_QUESTIONS, shuffled.length))
+    const selected = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
     
     setQuizQuestions(selected)
     setCurrentIndex(0)
@@ -29,9 +32,10 @@ function App() {
     setLoading(false)
   }
 
-  useEffect(() => {
-    initializeQuiz()
-  }, [])
+  const startQuiz = (selectedMode: QuizMode) => {
+    setMode(selectedMode)
+    initializeQuiz(selectedMode)
+  }
 
   const handleAnswer = (answer: boolean) => {
     if (answered) return
@@ -51,7 +55,12 @@ function App() {
   }
 
   const handleReset = () => {
-    initializeQuiz()
+    setShowModeSelect(true)
+    setQuizQuestions([])
+    setCurrentIndex(0)
+    setUserAnswers([])
+    setAnswered(false)
+    setShowResults(false)
   }
 
   const calculateScore = () => {
@@ -62,6 +71,47 @@ function App() {
       }
     })
     return { correct, total: userAnswers.length }
+  }
+
+  // モード選択画面
+  if (showModeSelect) {
+    return (
+      <div className="app-container">
+        <header>
+          <h1>🚗 運転免許試験クイズ</h1>
+        </header>
+        
+        <main className="quiz-container">
+          <div className="mode-select-container">
+            <h2>モードを選択してください</h2>
+            
+            <div className="mode-cards">
+              <div className="mode-card" onClick={() => startQuiz('provisional')}>
+                <div className="mode-icon">🚙</div>
+                <h3>{QUIZ_CONFIG.provisional.name}</h3>
+                <div className="mode-details">
+                  <p>問題数: {QUIZ_CONFIG.provisional.questionCount}問</p>
+                  <p>合格ライン: {QUIZ_CONFIG.provisional.passRate}%以上</p>
+                  <p className="mode-description">第一段階の問題のみ</p>
+                </div>
+                <button className="btn btn-start">開始する</button>
+              </div>
+              
+              <div className="mode-card disabled">
+                <div className="mode-icon">🚗</div>
+                <h3>{QUIZ_CONFIG.full.name}</h3>
+                <div className="mode-details">
+                  <p>問題数: {QUIZ_CONFIG.full.questionCount}問</p>
+                  <p>合格ライン: {QUIZ_CONFIG.full.passRate}%以上</p>
+                  <p className="mode-description">第一段階 + 第二段階の問題</p>
+                </div>
+                <div className="coming-soon">Coming soon...</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   if (loading) {
@@ -86,12 +136,14 @@ function App() {
   if (showResults) {
     const score = calculateScore()
     const percentage = Math.round((score.correct / score.total) * 100)
-    const passed = percentage >= 90 // 90%以上で合格
+    const config = QUIZ_CONFIG[mode]
+    const passed = percentage >= config.passRate
     
     return (
       <div className="app-container">
         <header>
           <h1>🚗 運転免許試験クイズ</h1>
+          <p className="mode-badge">{QUIZ_CONFIG[mode].name}</p>
         </header>
         
         <main className="quiz-container">
@@ -146,7 +198,7 @@ function App() {
             </div>
 
             <button className="btn btn-restart" onClick={handleReset}>
-              もう一度挑戦する
+              モード選択に戻る
             </button>
           </div>
         </main>
@@ -161,12 +213,13 @@ function App() {
     <div className="app-container">
       <header>
         <h1>🚗 運転免許試験クイズ</h1>
+        <p className="mode-badge">{QUIZ_CONFIG[mode].name}</p>
         <div className="header-info">
           <div className="progress">
             問題 {currentIndex + 1} / {quizQuestions.length}
           </div>
           <button className="btn-reset" onClick={handleReset}>
-            リセット
+            モード選択に戻る
           </button>
         </div>
       </header>
