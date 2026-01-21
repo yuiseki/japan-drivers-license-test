@@ -401,62 +401,6 @@ header h1 {
   width: 100%;
   max-width: 700px;
   text-align: center;
-},
-  .results-card,
-  .mode-select-container {
-    padding: 25px;
-  }
-
-  .question-text {
-    font-size: 1.2rem;
-    min-height: 80px;
-  }
-
-  .answer-buttons {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .btn {
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    width: 100%;
-  }
-
-  .mode-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .mode-select-container h2 {
-    font-size: 1.5rem;
-  }
-
-  .score-number {
-    font-size: 2.5rem;
-  }
-
-  .score-percentage {
-    font-size: 1.5rem;
-  }
-
-  .results-title {
-    font-size: 1.5rem;
-  }
-
-  .answer-list {
-    max-height: 400px;
-  }
-}
-
-/* モード選択画面のスタイル */
-.mode-select-container {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 700px;
-  text-align: center;
 }
 
 .mode-select-container h2 {
@@ -570,7 +514,9 @@ header h1 {
     font-size: 2rem;
   }
 
-  .question-card {
+  .question-card,
+  .results-card,
+  .mode-select-container {
     padding: 25px;
   }
 
@@ -588,5 +534,29 @@ header h1 {
     padding: 15px 30px;
     font-size: 1.1rem;
     width: 100%;
+  }
+
+  .mode-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-select-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .score-number {
+    font-size: 2.5rem;
+  }
+
+  .score-percentage {
+    font-size: 1.5rem;
+  }
+
+  .results-title {
+    font-size: 1.5rem;
+  }
+
+  .answer-list {
+    max-height: 400px;
   }
 }
