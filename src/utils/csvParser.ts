@@ -24,12 +24,13 @@ export function parseCSV(csvText: string): Record<string, string>[] {
 export async function loadAllQuestions(): Promise<Question[]> {
   const sections = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
   const allQuestions: Question[] = [];
+  const baseUrl = import.meta.env.BASE_URL;
   
   for (const section of sections) {
     try {
       const [questionsResponse, answersResponse] = await Promise.all([
-        fetch(`/questions/1st-step-sections/${section}/questions.csv`),
-        fetch(`/questions/1st-step-sections/${section}/answers.csv`)
+        fetch(`${baseUrl}questions/1st-step-sections/${section}/questions.csv`),
+        fetch(`${baseUrl}questions/1st-step-sections/${section}/answers.csv`)
       ]);
       
       if (!questionsResponse.ok || !answersResponse.ok) {
