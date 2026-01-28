@@ -47,19 +47,26 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
       
       // answersをMapに変換
       const answersMap = new Map(
-        answers.map(a => [a.id, a.answer === 'true'])
+        answers.map(a => [
+          a.id,
+          {
+            answer: a.answer === 'true',
+            explain: a.explain?.trim() || undefined
+          }
+        ])
       );
       
       // 「この」を含む問題を除外
       const validQuestions = questions.filter(q => !q.question.includes('この'));
       
       validQuestions.forEach(q => {
-        const answer = answersMap.get(q.id);
-        if (answer !== undefined) {
+        const answerData = answersMap.get(q.id);
+        if (answerData !== undefined) {
           allQuestions.push({
             id: `${section}-${q.id}`,
             question: q.question,
-            answer: answer,
+            answer: answerData.answer,
+            explain: answerData.explain,
             section: section
           });
         }
@@ -91,19 +98,26 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
         
         // answersをMapに変換
         const answersMap = new Map(
-          answers.map(a => [a.id, a.answer === 'true'])
+          answers.map(a => [
+            a.id,
+            {
+              answer: a.answer === 'true',
+              explain: a.explain?.trim() || undefined
+            }
+          ])
         );
         
         // 「この」を含む問題を除外
         const validQuestions = questions.filter(q => !q.question.includes('この'));
         
         validQuestions.forEach(q => {
-          const answer = answersMap.get(q.id);
-          if (answer !== undefined) {
+          const answerData = answersMap.get(q.id);
+          if (answerData !== undefined) {
             allQuestions.push({
               id: `2nd-${section}-${q.id}`,
               question: q.question,
-              answer: answer,
+              answer: answerData.answer,
+              explain: answerData.explain,
               section: section + 100 // 2nd-stepは100番台にする
             });
           }

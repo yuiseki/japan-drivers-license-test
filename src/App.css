@@ -221,6 +221,27 @@ header h1 {
   font-weight: bold;
 }
 
+.explain-card {
+  margin-bottom: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  text-align: left;
+}
+
+.explain-title {
+  font-weight: bold;
+  color: #3d4d91;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.explain-text {
+  color: #2c3e50;
+  line-height: 1.6;
+}
+
 /* 結果画面のスタイル */
 .results-card {
   background: white;
@@ -365,6 +386,23 @@ header h1 {
   gap: 15px;
   font-size: 0.95rem;
   color: #7f8c8d;
+}
+
+.answer-item-explain {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.answer-item-explain .explain-title {
+  margin-bottom: 0;
 }
 
 .correct-ans {

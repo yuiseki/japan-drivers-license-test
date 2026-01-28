@@ -250,6 +250,12 @@ function App() {
                           <span className="correct-ans">正解: {question.answer ? '⭕' : '❌'}</span>
                         )}
                       </div>
+                      {!isCorrect && question.explain && (
+                        <div className="answer-item-explain">
+                          <span className="explain-title">解説:</span>
+                          <span className="explain-text">{question.explain}</span>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
@@ -330,6 +336,13 @@ function App() {
               <div className="correct-answer">
                 正解: {currentQuestion.answer ? '⭕ マル' : '❌ バツ'}
               </div>
+
+              {userAnswers[userAnswers.length - 1] !== currentQuestion.answer && currentQuestion.explain && (
+                <div className="explain-card">
+                  <div className="explain-title">解説</div>
+                  <div className="explain-text">{currentQuestion.explain}</div>
+                </div>
+              )}
 
               <button 
                 className="btn btn-next"

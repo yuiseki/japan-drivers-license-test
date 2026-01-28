@@ -2,6 +2,7 @@ export interface Question {
   id: string;
   question: string;
   answer: boolean;
+  explain?: string;
   section: number;
 }
 
