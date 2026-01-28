@@ -4,6 +4,34 @@ import type { Question, QuizMode } from './types'
 import { QUIZ_CONFIG } from './types'
 import { loadAllQuestions } from './utils/csvParser'
 
+const REVIEW_STORAGE_KEY = 'driver-license-quiz-review-v1'
+
+type ReviewMap = Record<string, number>
+
+const loadReviewMap = (): ReviewMap => {
+  if (typeof window === 'undefined') return {}
+  try {
+    const raw = localStorage.getItem(REVIEW_STORAGE_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw)
+    if (parsed === null || typeof parsed !== 'object') return {}
+    const cleaned: ReviewMap = {}
+    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+        cleaned[key] = value
+      }
+    }
+    return cleaned
+  } catch {
+    return {}
+  }
+}
+
+const saveReviewMap = (map: ReviewMap) => {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(map))
+}
+
 function App() {
   const [mode, setMode] = useState<QuizMode>('provisional')
   const [showModeSelect, setShowModeSelect] = useState(true)
@@ -20,9 +48,17 @@ function App() {
     const allQuestions = await loadAllQuestions(quizMode)
     
     const config = QUIZ_CONFIG[quizMode]
-    // ランダムに指定問数を選択
-    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5)
-    const selected = shuffled.slice(0, Math.min(config.questionCount, shuffled.length))
+    const reviewMap = loadReviewMap()
+    const requiredIds = new Set(
+      Object.entries(reviewMap)
+        .filter(([, streak]) => streak < 3)
+        .map(([id]) => id)
+    )
+    const requiredQuestions = allQuestions.filter((question) => requiredIds.has(question.id))
+    const remaining = allQuestions.filter((question) => !requiredIds.has(question.id))
+    const shuffled = [...remaining].sort(() => Math.random() - 0.5)
+    const remainingCount = Math.max(config.questionCount - requiredQuestions.length, 0)
+    const selected = requiredQuestions.concat(shuffled.slice(0, remainingCount))
     
     setQuizQuestions(selected)
     setCurrentIndex(0)
@@ -37,9 +73,30 @@ function App() {
     initializeQuiz(selectedMode)
   }
 
+  const updateReviewStatus = (question: Question, isCorrect: boolean) => {
+    const reviewMap = loadReviewMap()
+    if (isCorrect) {
+      const current = reviewMap[question.id]
+      if (current !== undefined) {
+        const nextStreak = current + 1
+        if (nextStreak >= 3) {
+          delete reviewMap[question.id]
+        } else {
+          reviewMap[question.id] = nextStreak
+        }
+      }
+    } else {
+      reviewMap[question.id] = 0
+    }
+    saveReviewMap(reviewMap)
+  }
+
   const handleAnswer = (answer: boolean) => {
     if (answered) return
     
+    const currentQuestion = quizQuestions[currentIndex]
+    const isCorrect = answer === currentQuestion.answer
+    updateReviewStatus(currentQuestion, isCorrect)
     setUserAnswers([...userAnswers, answer])
     setAnswered(true)
   }
