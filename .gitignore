@@ -1,3 +1,6 @@
+.env
+cookies.txt
+
 # Logs
 logs
 *.log
