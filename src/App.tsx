@@ -154,7 +154,7 @@ function App() {
                 <button className="btn btn-start">開始する</button>
               </div>
               
-              <div className="mode-card disabled">
+              <div className="mode-card" onClick={() => startQuiz('full')}>
                 <div className="mode-icon">🚗</div>
                 <h3>{QUIZ_CONFIG.full.name}</h3>
                 <div className="mode-details">
@@ -162,9 +162,7 @@ function App() {
                   <p>合格ライン: {QUIZ_CONFIG.full.passRate}%以上</p>
                   <p className="mode-description">第一段階 + 第二段階の問題</p>
                 </div>
-                <button className="btn btn-start" disabled>
-                  Coming soon...
-                </button>
+                <button className="btn btn-start">開始する</button>
               </div>
             </div>
           </div>

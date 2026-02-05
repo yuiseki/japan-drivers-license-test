@@ -25,6 +25,14 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
   const sections = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
   const allQuestions: Question[] = [];
   const baseUrl = import.meta.env.BASE_URL;
+
+  const stripWrappingQuotes = (value: string) => {
+    const trimmed = value.trim()
+    if (trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')) {
+      return trimmed.slice(1, -1)
+    }
+    return trimmed
+  }
   
   // 1st-step-sections (仮免許)
   for (const section of sections) {
@@ -57,7 +65,9 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
       );
       
       // 「この」を含む問題を除外
-      const validQuestions = questions.filter(q => !q.question.includes('この'));
+      const validQuestions = questions
+        .map((q) => ({ ...q, question: stripWrappingQuotes(q.question) }))
+        .filter(q => !q.question.includes('この'));
       
       validQuestions.forEach(q => {
         const answerData = answersMap.get(q.id);
@@ -108,7 +118,9 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
         );
         
         // 「この」を含む問題を除外
-        const validQuestions = questions.filter(q => !q.question.includes('この'));
+        const validQuestions = questions
+          .map((q) => ({ ...q, question: stripWrappingQuotes(q.question) }))
+          .filter(q => !q.question.includes('この'));
         
         validQuestions.forEach(q => {
           const answerData = answersMap.get(q.id);
