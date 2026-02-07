@@ -1,6 +1,17 @@
 import type { Question, QuizMode } from '../types';
 
-export function parseCSV(csvText: string): Record<string, string>[] {
+type QuestionRow = {
+  id: string;
+  question: string;
+};
+
+type AnswerRow = {
+  id: string;
+  answer: string;
+  explain?: string;
+};
+
+export function parseCSV<T extends Record<string, string> = Record<string, string>>(csvText: string): T[] {
   const lines = csvText.trim().split('\n');
   if (lines.length < 2) return [];
   
@@ -18,7 +29,7 @@ export function parseCSV(csvText: string): Record<string, string>[] {
     data.push(row);
   }
   
-  return data;
+  return data as T[];
 }
 
 export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<Question[]> {
@@ -50,8 +61,8 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
       const questionsText = await questionsResponse.text();
       const answersText = await answersResponse.text();
       
-      const questions = parseCSV(questionsText);
-      const answers = parseCSV(answersText);
+      const questions = parseCSV<QuestionRow>(questionsText);
+      const answers = parseCSV<AnswerRow>(answersText);
       
       // answersをMapに変換
       const answersMap = new Map(
@@ -66,7 +77,7 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
       
       // 「この」を含む問題を除外
       const validQuestions = questions
-        .map((q) => ({ ...q, question: stripWrappingQuotes(q.question) }))
+        .map((q) => ({ id: q.id, question: stripWrappingQuotes(q.question) }))
         .filter(q => !q.question.includes('この'));
       
       validQuestions.forEach(q => {
@@ -103,8 +114,8 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
         const questionsText = await questionsResponse.text();
         const answersText = await answersResponse.text();
         
-        const questions = parseCSV(questionsText);
-        const answers = parseCSV(answersText);
+        const questions = parseCSV<QuestionRow>(questionsText);
+        const answers = parseCSV<AnswerRow>(answersText);
         
         // answersをMapに変換
         const answersMap = new Map(
@@ -119,7 +130,7 @@ export async function loadAllQuestions(mode: QuizMode = 'provisional'): Promise<
         
         // 「この」を含む問題を除外
         const validQuestions = questions
-          .map((q) => ({ ...q, question: stripWrappingQuotes(q.question) }))
+          .map((q) => ({ id: q.id, question: stripWrappingQuotes(q.question) }))
           .filter(q => !q.question.includes('この'));
         
         validQuestions.forEach(q => {
